@@ -1,54 +1,33 @@
 #include "etap.h"
 
-ETAP_USE_DEFAULT_BSP;
-
 /**
    The purpose of these tests is to exercise every
    test macro to demonstrate that it PASSES when
    expected, i.e. that it meets the positive criteria.
 */
 
-int passing_test()
-{
-  TEST_START();
+// ETAP_MINIMAL;
+ETAP_FULL;
 
-  EXPECT_TRUE(1);
+ETAP_USE_DEFAULT_BSP;
 
-  TEST_END();
+static int i;
+
+ETAP_DEFINE_SETUP(){
+  printf("# SETUP for %i\n", i=__current_test_index);
 }
 
-
-int passing_test2()
-{
-  TEST_START();
-
-  EXPECT_TRUE( (3 == 3) );
-  EXPECT_TRUE(1);
-
-  TEST_END();
+ETAP_DEFINE_TEARDOWN(){
+  printf("# TEARDOWN for %i\n", i);
 }
 
-tap_test t1 =   {
-   "a test!",
-   &passing_test,
-  };
+ETAP_SUITE_START("Test that all expected passes actually PASS!");
 
-tap_test t2 =
-   {
-   "an other test!",
-   &passing_test2,
-  };
+ETAP_TEST("expect true passes when TRUE"){
+    ETAP_PRINTF("bob and his amazing chainsaw. %i  %i \n", 7, 3);
+    EXPECT_TRUE( (8 == 8) );
+    EXPECT_FALSE( (1 == 8) );
+    EXPECT_TRUE(1);
+}
 
-tap_test t3 =
-   {
-   "a THIRD passing test!",
-   &passing_test,
-  };
-
-tap_test * tap_test_list[] =
-  {
-   &t1,
-   &t2,
-   &t3,
-   0,
-  };
+ETAP_SUITE_END;

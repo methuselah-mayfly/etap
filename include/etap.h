@@ -1,5 +1,5 @@
-#ifndef __TAPTEST_H_
-#define __TAPTEST_H_
+#ifndef __ETAP_H_
+#define __ETAP_H_
 
 /**
    This is a suite for doing unit tests on the POSIX
@@ -8,8 +8,9 @@
    will spit TAP compliant results out of stdio.
 */
 
-
-// todo: look up https://www.npmjs.com/package/tap-junit
+#ifndef __COUNTER__
+#error    # this library depends upon the non standard preprocessor macro __COUNTER__, which gcc, clang both support
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -18,52 +19,111 @@ extern "C" {
 #include <stdio.h>
 #include "assert.h"
 
-typedef int test_function(void);
+//  must be used in a function body
+#define ETAP_TEST(desc)                                                                      \
+  __current_test_index++;                                                                    \
+  if (__current_test_index != 1) {do_teardown();emit_tap_result(__current_test_index - 1);}  \
+  __etap_local_result_isok = 1;                                                              \
+  do_setup();                                                                                \
+  update_test_details(desc, __COUNTER__);
+
+#define ETAP_PRINTF(...) printf("# " __VA_ARGS__)
+
+// is plonked at file scope, sets sd directly.
+// must be assignment, can't call func as not in statement!
+#define ETAP_SUITE_START(desc) \
+  const char * sd = desc;      \
+  void dotests() {
+
+#define ETAP_SUITE_END      \
+  }                         \
+static int num_tests(void){ \
+  return __COUNTER__;       \
+}
+
+#define ETAP_DEFINE_SETUP() \
+  void do_setup(void)
+
+#define ETAP_DEFINE_TEARDOWN() \
+  void do_teardown(void)
+
+#define ETAP_MINIMAL     \
+  void do_setup(void){}; \
+  void do_teardown(nvoid){}
+
+#define ETAP_FULL
+
+extern const char * sd;
+
+
+void do_setup(void);
+void do_teardown(void);
+
+static void dummy(const char *desc, int cnt){};
+
+const char * test_desc;
+int __current_test_index;  // current test index, from 1, 0 is no tests run yet
+
+void update_test_details(const char *desc, int dummy);
+void update_test_details(const char *desc, int dummy)
+{
+  test_desc = desc;
+  printf("# running test %i [%s]\n", __current_test_index, test_desc);
+}
+
+void dotests(void);
+
+static int num_tests(void);
+
+typedef void test_function(void);
 
 typedef struct {
   const char * desc;
   test_function * ptest_func;
 } tap_test;
 
-extern tap_test* tap_test_list[];
-  //extern int __current_test_index;  // for use by macros, do not use
-void tt_report_failure(const char *);
+int __etap_local_result_isok;
+void tt_report_failure(const char *pred, const char *location_str);
 void etap_init_bsp(int argc, const char * argv[]);
 
 #define ETAP_USE_DEFAULT_BSP void etap_init_bsp(int argc, const char * argv[]){}
 
-#define TEST_START(p) int __taptest_local_result = 1
-#define TEST_END(p) return __taptest_local_result
-
-#define EXPECT_TRUE(p)                 \
-  do                                   \
-    {                                  \
-      __taptest_local_result &= (p);   \
+#define EXPECT_TRUE(p)                                         \
+  do                                                           \
+    {                                                          \
+      int val = (p);                                           \
+      __etap_local_result_isok &= (val);                       \
+      if (! val) {                                             \
+        tt_report_failure("EXPECT_TRUE(" TOSTRING(p) ")", AT); \
+      }                                                        \
     }while(0)
 
-#define ASSERT_TRUE(p)                 \
-  do                                   \
-    {                                  \
-      if (!(p)) return 0;              \
+#define ASSERT_TRUE(p)                                      \
+  do                                                        \
+    {                                                       \
+  int val = (p);                                            \
+  if (!val) { tt_report_failure(TOSTRING(p), AT);  return}; \
     }while(0)
 
-#define STRINGIZE(x) STRINGIZE2(x)
-#define STRINGIZE2(x) #x
-#define LINE_STRING STRINGIZE(__LINE__)
+// thanks to http://www.decompile.com/cpp/faq/file_and_line_error_string.htm
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+#define AT __FILE__ ":" TOSTRING(__LINE__)
 
-#define EXPECT_FALSE(p)                \
-  do                                   \
-    {                                  \
-      int val = (p);                                                   \
-      if (val)                                                          \
-     { tt_report_failure(LINE_STRING); __taptest_local_result &= !(val); } \
+#define EXPECT_FALSE(p)                                             \
+  do                                                                \
+    {                                                               \
+      int val = (p);                                                \
+      __etap_local_result_isok &= !(val);                           \
+      if (val)                                                      \
+        { tt_report_failure("EXPECT_FALSE(" TOSTRING(p) ")", AT); } \
     }while(0)
 
-#define ASSERT_FALSE(p)                \
-  do                                   \
-    {                                  \
-  int val = (p); \
-  if (val) { tt_report_failure("unexpected MARTIANS"##_LINE_);  return 0};  \
+#define ASSERT_FALSE(p)                                    \
+  do                                                       \
+    {                                                      \
+  int val = (p);                                           \
+  if (val) { tt_report_failure(TOSTRING(p), AT);  return}; \
     }while(0)
 
 #ifdef __cplusplus
@@ -72,72 +132,49 @@ void etap_init_bsp(int argc, const char * argv[]);
 
 ///// START OF INCLUDED (SHUDDER) CODE DEFINITIONS
 
-int __current_test_index;  // for use by macros, do not use
-
-static int num_tests()
-{
-    int num_tests = 0;
-    tap_test ** ptest = tap_test_list;
-
-    while (*ptest != (void*)0)
-        {
-            num_tests++;
-            ptest++;
-        }
-
-    return num_tests;
-}
-
 static void emit_tap_version()
 {
-    puts("TAP version 13");
+  puts("TAP version 13");
 }
 
-static void emit_tap_plan()
+static void emit_tap_plan(void)
 {
-    printf("1..%d\n", num_tests());
+  printf("1..%d\n", num_tests());
 }
 
-static int run_single_test(tap_test * test, int index)
+static void emit_tap_result(int test_num)
 {
-    __current_test_index = index;  //used by test macros
-
-    assert(test->ptest_func != (void*)0);
-    int isok = test->ptest_func();
-
-    printf("%sok %i - %s\n", (isok) ? "" : "not ", index, test->desc);
-
-    return isok;
+  printf("%sok - %d\n", (! __etap_local_result_isok) ? "not " : "", test_num);
 }
 
-static int global_result_isok = ! 0;
+static void emit_tap_suite_desc()
+{
+  printf("# Test Suite: %s\n", sd);
+}
 
-// TODO:
-// 1) convert to HEADER ONLY VERSION a la catch2 (code in header ok for test framework)
-// 2) add macro to call/stub bsp for hal_init  ETAP_NO_BSP;
-// 3) do tests that check via bash script tap outputon POSIX is all fail, all pass for test tests
+static int __etap_global_result_isok = ! 0;
 
 int main(int argc, const char * argv[]) {
-    // set up HAL device name mappings, also can override defaults in POSIX
-    // this also sets unit test serial port via the -s flag
-    etap_init_bsp(argc, argv);
+  // set up HAL device name mappings, also can override defaults in POSIX
+  // this can also set unit test serial port via the -s flag
+  etap_init_bsp(argc, argv);
 
-    emit_tap_version();
-    emit_tap_plan();
+  emit_tap_version();
+  emit_tap_suite_desc();
+  emit_tap_plan();
 
-    for (int i = 0; i < num_tests(); i++)
-        {
-            // call test, print results, collate global result.
-            global_result_isok &= run_single_test(tap_test_list[i], i+1);
-        }
+  __current_test_index = 0;
+  dotests();
+  do_teardown();  // final teardown for last test.
+  emit_tap_result(__current_test_index); // test result for last test run
 
-    // BASH return code is ZERO for good, i.e. isok -> 0
-    return ! global_result_isok;
+  // BASH return code is ZERO for good, i.e. isok -> 0
+  return ! __etap_global_result_isok;
 }
 
-void tt_report_failure(const char *str)
+void tt_report_failure(const char *pred, const char *location_str)
 {
-    printf("# TEST %i: FAIL [%s]\n", __current_test_index, str);
+  printf("#FAILED %s: %s\n", pred, location_str);
 }
 
-#endif // __TAPTEST_H_
+#endif // __ETAP_H_

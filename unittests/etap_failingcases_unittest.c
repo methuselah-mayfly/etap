@@ -1,46 +1,37 @@
 #include "etap.h"
 
-ETAP_USE_DEFAULT_BSP;
-
 /**
    The purpose of these tests is to exercise every
    test macro to demonstrate that it FAILS when
    expected, i.e. that it meets the negative criteria.
 */
 
-int t1_body()
-{
-  TEST_START();
+// ETAP_MINIMAL;
+ETAP_FULL;
+ETAP_USE_DEFAULT_BSP;
 
+static int i;
+
+ETAP_DEFINE_SETUP(){
+  printf("# SETUP for %i\n", i=__current_test_index);
+}
+
+ETAP_DEFINE_TEARDOWN(){
+  printf("# TEARDOWN for %i\n", i);
+}
+
+ETAP_SUITE_START("Test that all expected fails actually FAIL!");
+
+ETAP_TEST("expect true fails when NOT TRUE"){
+  ETAP_PRINTF("bob and his amazing chainsaw. %i  %i \n", 7, 3);
   EXPECT_TRUE( (1 == 8) );
   EXPECT_FALSE( (8 == 8) );
-
-  TEST_END();
-}
-
-int t2_body()
-{
-  TEST_START();
-
   EXPECT_TRUE(0);
-
-  TEST_END();
 }
 
-tap_test t1 =   {
-   "a test!",
-   &t1_body,
-  };
+ETAP_TEST("test tew..."){
+  ETAP_PRINTF("printf from test two\n");
+  EXPECT_TRUE(0);
+}
 
-tap_test t2 =
-   {
-   "a (failing) test!",
-   &t2_body,
-  };
-
-tap_test * tap_test_list[] =
-  {
-   &t1,
-   &t2,
-   0,
-  };
+ETAP_SUITE_END;
