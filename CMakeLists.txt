@@ -39,4 +39,20 @@ if (NOT CMAKE_CROSSCOMPILING)
     )
     target_link_libraries(etap_failing_test etap)
     add_test(etap_failing_test etap_failing_test)
+
+    # Add test for all setup/teardown and general execution flow
+    add_executable(etap_infra_test
+        unittests/etap_infra_unittest.cpp
+    )
+    target_include_directories(etap_infra_test
+        PUBLIC
+        include
+    )
+    target_link_libraries(etap_infra_test etap)
+    add_test(etap_infra_test etap_infra_test)
+
+    add_test(NAME etap_check_all_tests
+             COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/unittests/run_etap_unit_tests.sh ${CMAKE_CURRENT_SOURCE_DIR}/unittests
+             WORKING_DIR ${CMAKE_CURRENT_BINARY_DIR})
+
 endif()

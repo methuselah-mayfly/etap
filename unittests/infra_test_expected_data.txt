@@ -1,0 +1,20 @@
+TAP version 13
+# Test Suite: Test that the setup/teardown and test reports run as expected.
+1..4
+# SETUP for 1
+# running test 1 [Test one]
+# We should have setup and teardown bracketing this test, which should PASS.
+# TEARDOWN for 1
+ok - 1
+# SETUP for 2
+# running test 2 [Test two]
+# TEARDOWN for 2
+ok - 2
+# SETUP for 3
+# running test 3 [Test three]
+# TEARDOWN for 3
+ok - 3
+# SETUP for 4
+# running test 4 [Test four and final]
+# TEARDOWN for 4
+ok - 4

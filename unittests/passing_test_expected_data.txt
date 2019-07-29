@@ -1,0 +1,8 @@
+TAP version 13
+# Test Suite: Test that all expected passes actually PASS!
+1..1
+# SETUP for 1
+# running test 1 [expect true passes when TRUE]
+# bob and his amazing chainsaw. 7  3 
+# TEARDOWN for 1
+ok - 1

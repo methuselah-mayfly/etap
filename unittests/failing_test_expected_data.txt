@@ -1,0 +1,17 @@
+TAP version 13
+# Test Suite: Test that all expected fails actually FAIL!
+1..2
+# SETUP for 1
+# running test 1 [expect true fails when NOT TRUE]
+# bob and his amazing chainsaw. 7  3 
+#FAILED EXPECT_TRUE((1 == 8)): /data/peter/enphase-work/bc_spike/etap/unittests/etap_failingcases_unittest.c:27
+#FAILED EXPECT_FALSE((8 == 8)): /data/peter/enphase-work/bc_spike/etap/unittests/etap_failingcases_unittest.c:28
+#FAILED EXPECT_TRUE(0): /data/peter/enphase-work/bc_spike/etap/unittests/etap_failingcases_unittest.c:29
+# TEARDOWN for 1
+not ok - 1
+# SETUP for 2
+# running test 2 [test tew...]
+# printf from test two
+#FAILED EXPECT_TRUE(0): /data/peter/enphase-work/bc_spike/etap/unittests/etap_failingcases_unittest.c:34
+# TEARDOWN for 2
+not ok - 2
