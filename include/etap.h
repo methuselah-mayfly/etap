@@ -20,11 +20,13 @@ extern "C" {
 #include "assert.h"
 
 //  must be used in a function body
-#define ETAP_TEST(desc)                                                                      \
-  __current_test_index++;                                                                    \
-  if (__current_test_index != 1) {do_teardown();emit_tap_result(__current_test_index - 1);}  \
-  __etap_local_result_isok = 1;                                                              \
-  do_setup();                                                                                \
+#define ETAP_TEST(desc)                                        \
+  __current_test_index++;                                      \
+  if (__current_test_index != 1) {                             \
+    do_after_single_test_processing(__current_test_index - 1); \
+  }                                                            \
+  __etap_local_result_isok = 1;                                \
+  do_setup();                                                  \
   update_test_details(desc, __COUNTER__);
 
 #define ETAP_PRINTF(...) printf("# " __VA_ARGS__)
@@ -132,6 +134,8 @@ void etap_init_bsp(int argc, const char * argv[]);
 
 ///// START OF INCLUDED (SHUDDER) CODE DEFINITIONS
 
+static int __etap_global_result_isok = ! 0;
+
 static void emit_tap_version()
 {
   puts("TAP version 13");
@@ -152,7 +156,12 @@ static void emit_tap_suite_desc()
   printf("# Test Suite: %s\n", sd);
 }
 
-static int __etap_global_result_isok = ! 0;
+static void do_after_single_test_processing(int test_index)
+{
+  do_teardown();                                         // final teardown for last test.
+  emit_tap_result(test_index);                           // test result for last test run
+  __etap_global_result_isok &= __etap_local_result_isok; // fold in global test result from last test
+}
 
 int main(int argc, const char * argv[]) {
   // set up HAL device name mappings, also can override defaults in POSIX
@@ -165,8 +174,7 @@ int main(int argc, const char * argv[]) {
 
   __current_test_index = 0;
   dotests();
-  do_teardown();  // final teardown for last test.
-  emit_tap_result(__current_test_index); // test result for last test run
+  do_after_single_test_processing(__current_test_index);
 
   // BASH return code is ZERO for good, i.e. isok -> 0
   return ! __etap_global_result_isok;
