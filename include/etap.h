@@ -136,6 +136,24 @@ void etap_init_bsp(int argc, const char * argv[]);
     }while(0)
 
 
+// BDD style aliases, basically syntactic sugar!
+#define GIVEN     ASSERT_TRUE
+#define AND_GIVEN ASSERT_TRUE
+#define WHEN      ASSERT_TRUE
+#define AND_WHEN  ASSERT_TRUE
+#define THEN
+
+#define EXPECT_EQ(a, b)                                                            \
+  do                                                                               \
+    {                                                                              \
+      int val = ((a) == (b));                                                      \
+      __etap_local_result_isok &= (val);                                           \
+      if (! val) {                                                                 \
+        tt_report_failure("EXPECT_EQ COMPARE " TOSTRING(a) " == " TOSTRING(b), AT); \
+      }                                                                            \
+    }while(0)
+
+
 #ifdef __cplusplus
 }
 #endif
