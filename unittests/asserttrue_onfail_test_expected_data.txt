@@ -1,0 +1,12 @@
+TAP version 13
+# Test Suite: Test that ASSERT_TRUE() exits on fail.
+1..3
+# SETUP for 1
+# running test 1 [one, should complete]
+# TEARDOWN for 1
+ok - 1
+# SETUP for 2
+# running test 2 [two, should abort and return fail for whole suite]
+#FAILED ASSERT_TRUE(0): /some/path/too/etap/unittests/etap_asserttrue_onfail_unittest.cpp:30
+# TEARDOWN for 2
+not ok - 2

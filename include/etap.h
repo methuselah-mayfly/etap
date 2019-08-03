@@ -91,6 +91,11 @@ void etap_init_bsp(int argc, const char * argv[]);
 
 #define ETAP_USE_DEFAULT_BSP void etap_init_bsp(int argc, const char * argv[]){}
 
+// thanks to http://www.decompile.com/cpp/faq/file_and_line_error_string.htm
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+#define AT __FILE__ ":" TOSTRING(__LINE__)
+
 #define EXPECT_TRUE(p)                                         \
   do                                                           \
     {                                                          \
@@ -101,17 +106,15 @@ void etap_init_bsp(int argc, const char * argv[]);
       }                                                        \
     }while(0)
 
-#define ASSERT_TRUE(p)                                      \
-  do                                                        \
-    {                                                       \
-  int val = (p);                                            \
-  if (!val) { tt_report_failure(TOSTRING(p), AT);  return}; \
+#define ASSERT_TRUE(p)                                                 \
+  do                                                                   \
+    {                                                                  \
+      int val = (p);                                                   \
+      __etap_local_result_isok &= (val);                               \
+      if (! val) {                                                     \
+        tt_report_failure("ASSERT_TRUE(" TOSTRING(p) ")", AT); return; \
+      }                                                                \
     }while(0)
-
-// thanks to http://www.decompile.com/cpp/faq/file_and_line_error_string.htm
-#define STRINGIFY(x) #x
-#define TOSTRING(x) STRINGIFY(x)
-#define AT __FILE__ ":" TOSTRING(__LINE__)
 
 #define EXPECT_FALSE(p)                                             \
   do                                                                \
@@ -122,12 +125,16 @@ void etap_init_bsp(int argc, const char * argv[]);
         { tt_report_failure("EXPECT_FALSE(" TOSTRING(p) ")", AT); } \
     }while(0)
 
-#define ASSERT_FALSE(p)                                    \
-  do                                                       \
-    {                                                      \
-  int val = (p);                                           \
-  if (val) { tt_report_failure(TOSTRING(p), AT);  return}; \
+#define ASSERT_FALSE(p)                                                 \
+  do                                                                    \
+    {                                                                   \
+      int val = (p);                                                    \
+      __etap_local_result_isok &= !(val);                               \
+      if ( val) {                                                       \
+        tt_report_failure("ASSERT_FALSE(" TOSTRING(p) ")", AT); return; \
+      }                                                                 \
     }while(0)
+
 
 #ifdef __cplusplus
 }

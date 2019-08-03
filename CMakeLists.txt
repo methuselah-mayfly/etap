@@ -60,7 +60,51 @@ if (NOT CMAKE_CROSSCOMPILING)
         include
     )
     target_link_libraries(etap_minimal_test etap)
-    add_test(etap_infra_test etap_minimal_test)
+    add_test(etap_minimal_test etap_minimal_test)
+
+     # Add test for passing ASSERT_TRUE()
+    add_executable(etap_asserttrue_onpass_test
+        unittests/etap_asserttrue_onpass_unittest.cpp
+    )
+    target_include_directories(etap_asserttrue_onpass_test
+        PUBLIC
+        include
+    )
+    target_link_libraries(etap_asserttrue_onpass_test etap)
+    add_test(etap_asserttrue_onpass_test etap_asserttrue_onpass_test)
+
+   # Add test for failing ASSERT_TRUE()
+    add_executable(etap_asserttrue_onfail_test
+        unittests/etap_asserttrue_onfail_unittest.cpp
+    )
+    target_include_directories(etap_asserttrue_onfail_test
+        PUBLIC
+        include
+    )
+    target_link_libraries(etap_asserttrue_onfail_test etap)
+    add_test(etap_asserttrue_onfail_test etap_asserttrue_onfail_test)
+
+     # Add test for passing ASSERT_FALSE()
+    add_executable(etap_assertfalse_onpass_test
+        unittests/etap_assertfalse_onpass_unittest.cpp
+    )
+    target_include_directories(etap_assertfalse_onpass_test
+        PUBLIC
+        include
+    )
+    target_link_libraries(etap_assertfalse_onpass_test etap)
+    add_test(etap_assertfalse_onpass_test etap_assertfalse_onpass_test)
+
+   # Add test for failing ASSERT_FALSE()
+    add_executable(etap_assertfalse_onfail_test
+        unittests/etap_assertfalse_onfail_unittest.cpp
+    )
+    target_include_directories(etap_assertfalse_onfail_test
+        PUBLIC
+        include
+    )
+    target_link_libraries(etap_assertfalse_onfail_test etap)
+    add_test(etap_assertfalse_onfail_test etap_assertfalse_onfail_test)
 
     # finally the test to find them all and in the bash shell bind them.  this is to basically
     # do regression detection, NOTE the 'expected output' files need to be hand checked by a human
