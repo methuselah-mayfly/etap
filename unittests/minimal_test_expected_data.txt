@@ -1,0 +1,5 @@
+TAP version 13
+# Test Suite: Test Minimal Setup
+1..1
+# running test 1 [Minimal]
+ok - 1

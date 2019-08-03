@@ -49,9 +49,10 @@ static int num_tests(void){ \
 #define ETAP_DEFINE_TEARDOWN() \
   void do_teardown(void)
 
+// minimal provides stubs for setup/teardown
 #define ETAP_MINIMAL     \
   void do_setup(void){}; \
-  void do_teardown(nvoid){}
+  void do_teardown(void){}
 
 #define ETAP_FULL
 

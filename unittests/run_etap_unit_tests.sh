@@ -12,7 +12,7 @@ strip-path () {
 }
 
 RESULT=0
-for t in failing passing infra
+for t in minimal failing passing infra
 do
   "./etap_${t}_test" > "${t}_output.txt"
   # we check the test produces the same output as a hand checked recording.

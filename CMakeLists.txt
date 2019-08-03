@@ -51,6 +51,21 @@ if (NOT CMAKE_CROSSCOMPILING)
     target_link_libraries(etap_infra_test etap)
     add_test(etap_infra_test etap_infra_test)
 
+    # Add test for minimal case
+    add_executable(etap_minimal_test
+        unittests/etap_minimal_unittest.cpp
+    )
+    target_include_directories(etap_minimal_test
+        PUBLIC
+        include
+    )
+    target_link_libraries(etap_minimal_test etap)
+    add_test(etap_infra_test etap_minimal_test)
+
+    # finally the test to find them all and in the bash shell bind them.  this is to basically
+    # do regression detection, NOTE the 'expected output' files need to be hand checked by a human
+    # to validate they are correct, this test just checks re-running each test still produces the
+    # _same_ output.
     add_test(NAME etap_check_all_tests
              COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/unittests/run_etap_unit_tests.sh ${CMAKE_CURRENT_SOURCE_DIR}/unittests
              WORKING_DIR ${CMAKE_CURRENT_BINARY_DIR})
