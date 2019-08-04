@@ -62,7 +62,7 @@ if (NOT CMAKE_CROSSCOMPILING)
     target_link_libraries(etap_minimal_test etap)
     add_test(etap_minimal_test etap_minimal_test)
 
-     # Add test for passing ASSERT_TRUE()
+    # Add test for passing ASSERT_TRUE()
     add_executable(etap_asserttrue_onpass_test
         unittests/etap_asserttrue_onpass_unittest.cpp
     )
@@ -73,7 +73,7 @@ if (NOT CMAKE_CROSSCOMPILING)
     target_link_libraries(etap_asserttrue_onpass_test etap)
     add_test(etap_asserttrue_onpass_test etap_asserttrue_onpass_test)
 
-   # Add test for failing ASSERT_TRUE()
+    # Add test for failing ASSERT_TRUE()
     add_executable(etap_asserttrue_onfail_test
         unittests/etap_asserttrue_onfail_unittest.cpp
     )
@@ -83,6 +83,28 @@ if (NOT CMAKE_CROSSCOMPILING)
     )
     target_link_libraries(etap_asserttrue_onfail_test etap)
     add_test(etap_asserttrue_onfail_test etap_asserttrue_onfail_test)
+
+    # Add test for passing EXPECT_TRUE()
+    add_executable(etap_expecttrue_onpass_test
+        unittests/etap_expecttrue_onpass_unittest.cpp
+    )
+    target_include_directories(etap_expecttrue_onpass_test
+        PUBLIC
+        include
+    )
+    target_link_libraries(etap_expecttrue_onpass_test etap)
+    add_test(etap_expecttrue_onpass_test etap_expecttrue_onpass_test)
+
+   # Add test for failing EXPECT_TRUE()
+    add_executable(etap_expecttrue_onfail_test
+        unittests/etap_expecttrue_onfail_unittest.cpp
+    )
+    target_include_directories(etap_expecttrue_onfail_test
+        PUBLIC
+        include
+    )
+    target_link_libraries(etap_expecttrue_onfail_test etap)
+    add_test(etap_expecttrue_onfail_test etap_expecttrue_onfail_test)
 
      # Add test for passing ASSERT_FALSE()
     add_executable(etap_assertfalse_onpass_test

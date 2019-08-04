@@ -12,7 +12,7 @@ strip-path () {
 }
 
 RESULT=0
-for t in minimal failing passing infra asserttrue_onpass asserttrue_onfail assertfalse_onpass assertfalse_onfail
+for t in minimal failing passing infra asserttrue_onpass asserttrue_onfail assertfalse_onpass assertfalse_onfail expecttrue_onpass expecttrue_onfail
 do
   "./etap_${t}_test" > "${t}_output.txt"
   # we check the test produces the same output as a hand checked recording.
